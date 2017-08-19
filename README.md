@@ -4,7 +4,7 @@ This project focuses on gulp distribution of an Angular Tour of Heroes web app (
   
 [Demo of distributed Tour of Heroes web app](https://mobilewebsmart.com/_tests/20170819_angular_tourofheroes/)  
   
-For now I like using the [Angular quickstart (seed project)](https://github.com/angular/quickstart) for development. I'd like to use it as is. It already has linting, karma and e2e set up. But, the quickstart project does not have any way of generating a dist folder for easily distributing a production build. So, this project aims to stay out of the way of the Angular Quickstart 'src' folder when generating a 'dist' folder. Hopefully this is resuable and you have my [other project](https://github.com/BumbleB2na/Angular_Tour-of-Heroes) to compare to before this work was done.  
+For now I like using the [Angular quickstart (seed project)](https://github.com/angular/quickstart) for development. I'd like to use it as is. It already has linting, karma and e2e set up. But, the quickstart project does not have any way of generating a dist folder for easily distributing a production build. So, this project aims to stay out of the way of the Angular Quickstart 'src' folder when generating a 'dist' folder. You have my [other project](https://github.com/BumbleB2na/Angular_Tour-of-Heroes) to compare to before this additional of gulp was made.  
   
 ## Files that were modified:
 - [package.json](https://github.com/BumbleB2na/Angular_Tour-of-Heroes_Gulp/blob/master/tutorial/package.json) ([old version for comparison](https://github.com/BumbleB2na/Angular_Tour-of-Heroes/blob/master/tutorial/package.json)) <-- added new scripts for dist build and run with watch (in tutorial directory run `npm run startdist` script). The additional scripts are trivial and don't have to be reused but, there were also additional packages installed and saved to the project as devDependencies that should install when you run `npm start`. Those packages are needed for gulp. For details of those required packages refer to [this tutorial by Colin Eberhardt](http://blog.scottlogic.com/2015/12/24/creating-an-angular-2-build.html).    
@@ -15,7 +15,7 @@ For now I like using the [Angular quickstart (seed project)](https://github.com/
   
 # To use (Windows):
 1. `cd tutorial`  <-- this project does not sit at the root
-2. `npm start`  <-- start then exit so that devDependency packages install on your drive
+2. `npm install`  <-- devDependency packages install to node_modules in your project folder
 3. `gulp`  <-- builds to dist folder
 4. `npm run startdist`  <-- runs and watches the dist build, like it is done with src (dev) build in Quickstart Seed package.json script
 5. ftp dist folder contents to server location  (manually update base href in index.html to match folder location on server)
