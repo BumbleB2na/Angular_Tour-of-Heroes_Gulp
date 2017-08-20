@@ -1,10 +1,11 @@
 //Used Angular 2 Quickstart seed and started working on Tour of Heroes tutorial project. It did not have anything set up for building a distribution version. It did not use gulp.
-//Then, followed this tutorial to build a distribution version using gulp and gulp plugin packages: http://blog.scottlogic.com/2015/12/24/creating-an-angular-2-build.html
+//Loosely followed this tutorial to build a distribution version using gulp and gulp plugin packages: http://blog.scottlogic.com/2015/12/24/creating-an-angular-2-build.html
 
 const gulp = require('gulp');
 const del = require('del');
 const typescript = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
+const rename = require('gulp-rename');
 const tscConfig = require('./src/tsconfig.json');
 
 // clean the contents of the distribution directory
@@ -13,7 +14,7 @@ gulp.task('clean', function () {
 });
 
 // copy dependencies (NOTE: {base: '.'} keep original folder structure so that index.html can still point to node_modules folder)
-gulp.task('copy:libs', ['clean'], function() {
+gulp.task('copy:node-modules', ['clean'], function() {
     return gulp.src([
         'node_modules/core-js/client/shim.min.js',
         'node_modules/zone.js/dist/zone.js',
@@ -25,41 +26,26 @@ gulp.task('copy:libs', ['clean'], function() {
         'node_modules/@angular/forms/bundles/forms.umd.js',
         'node_modules/@angular/router/bundles/router.umd.js',
         'node_modules/@angular/common/bundles/common.umd.js',
-        'node_modules/rxjs/**/*.js'
+        'node_modules/@angular/compiler/bundles/compiler.umd.js',
+        'node_modules/rxjs/**/*.js',
     ], {base: '.'})
     .pipe(gulp.dest('dist'))
 });
 
-// TypeScript compile
-// gulp.task('compile', ['clean'], function () {
-//   return gulp
-//     .src('src/app/**/*.ts')
-//     .pipe(typescript(tscConfig.compilerOptions))
-//     .pipe(gulp.dest('dist/app'));
-// });
-// TypeScript compile with sourcemaps (gulp-sourcemaps)
-gulp.task('compile', ['clean'], function () {
+// copy static assets recursively (excluding TypeScript and Spec files and dist version of index.html) from src directory
+gulp.task('copy:static-assets', ['copy:node-modules'], function() {
     return gulp
-      .src('src/app/**/*.ts')
-      .pipe(sourcemaps.init())
-      .pipe(typescript(tscConfig.compilerOptions))
-      .pipe(sourcemaps.write('.'))
-      .pipe(gulp.dest('dist/app'));
-});
-
-
-// copy static assets (non-TypeScript and non-spec files) from base src/app directory
-gulp.task('copy:assets2', ['copy:libs'], function() {
-    return gulp
-      .src(['src/app/**/*', '!src/app/**/*.ts', '!src/app/**/*.spec.*'])
-      .pipe(gulp.dest('dist/app'))
-});
-// copy static assets (non-TypeScript files) from base src directory
-gulp.task('copy:assets', ['copy:assets2'], function() {
-    return gulp
-      .src(['src/index.html', 'src/favicon.ico', 'src/styles.css', 'src/main.js', 'src/main.js.map', 'src/systemjs*.js', 'src/tsconfig.json'])
+      .src(['src/**/*', '!src/**/*.ts', '!src/**/*.spec.*', '!src/index.dist.html'], {base: './src'})
       .pipe(gulp.dest('dist'))
 });
 
-gulp.task('build', ['copy:assets']);
-gulp.task('default', ['build']);
+// copy alternate "dist" version of index.html (index.dist.html) from base src directory and rename it to index.html after copy
+gulp.task('copy:index-dist-html', ['copy:static-assets'], function() {
+    return gulp
+      .src(['src/index.dist.html'])
+      .pipe(rename('index.html'))
+      .pipe(gulp.dest('dist'))
+});
+
+gulp.task('generate-dist', ['copy:index-dist-html']);
+gulp.task('default', ['generate-dist']);
